@@ -11,7 +11,11 @@ import UIKit
 open class TabPageViewController: UIPageViewController {
     open var isInfinity: Bool = false
     open var option: TabPageOption = TabPageOption()
-    open var tabItems: [(viewController: UIViewController, title: String)] = []
+    open var tabItems: [(viewController: UIViewController, title: String)] = [] {
+        didSet {
+            tabItemsCount = tabItems.count
+        }
+    }
 
     var currentIndex: Int? {
         guard let viewController = viewControllers?.first else {
@@ -20,9 +24,7 @@ open class TabPageViewController: UIPageViewController {
         return tabItems.map{ $0.viewController }.index(of: viewController)
     }
     fileprivate var beforeIndex: Int = 0
-    fileprivate var tabItemsCount: Int {
-        return tabItems.count
-    }
+    fileprivate var tabItemsCount = 0
     fileprivate var defaultContentOffsetX: CGFloat {
         return self.view.bounds.width
     }
@@ -32,12 +34,9 @@ open class TabPageViewController: UIPageViewController {
     fileprivate var statusViewHeightConstraint: NSLayoutConstraint?
     fileprivate var tabBarTopConstraint: NSLayoutConstraint?
 
-    public init() {
-        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-    }
-    
-    public required init?(coder aDecoder: NSCoder) {
-        super.init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
+    open static func create() -> TabPageViewController {
+        let sb = UIStoryboard(name: "TabPageViewController", bundle: Bundle(for: TabPageViewController.self))
+        return sb.instantiateInitialViewController() as! TabPageViewController
     }
 
     override open func viewDidLoad() {
@@ -237,25 +236,12 @@ extension TabPageViewController {
     public func updateNavigationBarHidden(_ hidden: Bool, animated: Bool) {
         guard let navigationController = navigationController else { return }
 
-        switch option.hidesTopViewOnSwipeType {
-        case .tabBar:
+        if option.hidesTabBarOnSwipe {
             updateTabBarOrigin(hidden: hidden)
-        case .navigationBar:
-            if hidden {
-                navigationController.setNavigationBarHidden(true, animated: true)
-            } else {
-                showNavigationBar()
-            }
-        case .all:
-            updateTabBarOrigin(hidden: hidden)
-            if hidden {
-                navigationController.setNavigationBarHidden(true, animated: true)
-            } else {
-                showNavigationBar()
-            }
-        default:
-            break
         }
+
+        navigationController.setNavigationBarHidden(hidden, animated: animated)
+
         if statusView == nil {
             setupStatusView()
         }
@@ -268,7 +254,7 @@ extension TabPageViewController {
         guard navigationController.isNavigationBarHidden  else { return }
         guard let tabBarTopConstraint = tabBarTopConstraint else { return }
 
-        if option.hidesTopViewOnSwipeType != .none {
+        if option.hidesTabBarOnSwipe {
             tabBarTopConstraint.constant = 0.0
             UIView.animate(withDuration: TimeInterval(UINavigationControllerHideShowBarDuration)) {
                 self.view.layoutIfNeeded()
