@@ -18,11 +18,11 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!  
   s.description      = "UIPageViewController and Tab"
 
-  s.homepage         = "https://github.com/EndouMari/TabPageViewController"
+  s.homepage         = "https://github.com/EvoIos/TabPageViewController"
   # s.screenshots     = "www.example.com/screenshots_1", "www.example.com/screenshots_2"
   s.license          = 'MIT'
   s.author           = { "EndouMari" => "endo@vasily.jp" }
-  s.source           = { :git => "https://github.com/EndouMari/TabPageViewController.git", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/EvoIos/TabPageViewController.git", :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.platform     = :ios, '8.0'
